@@ -54,10 +54,12 @@
     "webpack-hot-middleware": "^2.4.1"
   },
   "peerDependencies": {
-    "angular": "1.5.8"
+    "angular": "1.5.8",
+    "angular-sanitize": "1.5.8"
   },
   "dependencies": {
-    "angular": "1.5.8"
+    "angular": "1.5.8",
+    "angular-sanitize": "1.5.8"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"

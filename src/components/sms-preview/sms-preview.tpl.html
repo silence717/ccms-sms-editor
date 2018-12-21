@@ -16,8 +16,13 @@
 		<span class="sms-preview-num">{{totalVars}}</span> 个变量
 	</div>
 	<div class="sms-preview-tips"><span ng-bind="smsPreviewTipsText"></span>
-		<a href="javascript:void(0);"
-			 placement="top-right"
-			 cc-tooltip="smsPreviewTipsInTipsText">计费规则</a>
+		<a href="javascript:void(0);" class="tips-link">
+			<p class="tips-content">
+				<ng-bind-html
+						ng-bind-html="smsPreviewTipsInTipsText">
+				</ng-bind-html>
+			</p>
+			计费规则
+		</a>
 	</div>
 </div>

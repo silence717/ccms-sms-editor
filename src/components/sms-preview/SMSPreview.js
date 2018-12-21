@@ -10,7 +10,7 @@ const escapeRegExp = str => {
 	return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&');
 };
 
-export default {
+export default $sce => ({
 
 	restrict: 'E',
 	scope: {
@@ -37,7 +37,7 @@ export default {
 			const customSignature = opts.customSignature ? `【${opts.customSignature.replace(/</g, '&lt;')}】` : '';
 			const unsubscribeText = opts.useUnsubscribe ? (opts.unsubscribeText || '') : '';
 
-			scope.smsPreviewTipsInTipsText = opts.smsChargeTips || '单条短信字数限制 70 字；超出 70 字，按 67 字条计费；<br>字数和计费条数以实际执行时发送为准。';
+			scope.smsPreviewTipsInTipsText = $sce.trustAsHtml(opts.smsChargeTips || '单条短信字数限制 70 字；超出 70 字，按 67 字条计费；<br>字数和计费条数以实际执行时发送为准。');
 			// 字数统计
 			scope.totalChars = opts.totalCharts = text
 					.replace(varReg, '')
@@ -99,4 +99,4 @@ export default {
 		}
 		return sms.join('');
 	}
-};
+});
