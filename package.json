@@ -10,7 +10,7 @@
   "main": "./ccms-sms-editor.js",
   "style": "./ccms-sms-editor.css",
   "scripts": {
-    "pub": "npm publish dist",
+    "release": "npm run build && npm publish dist",
     "build": "NODE_ENV=production webpack --config webpack-build.config.js && cp package.json ./dist/package.json",
     "start": "node server.js"
   },
