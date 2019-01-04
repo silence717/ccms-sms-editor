@@ -5,5 +5,5 @@ import ddofn from './SMSPreview';
 
 export default angular
 	.module('ccms.components.sms.SMSPreview', [ngSanitize])
-	.directive('ccSmsPreview', ['$sce', ddofn])
+	.directive('ccmsSmsPreview', ['$sce', ddofn])
 	.name;

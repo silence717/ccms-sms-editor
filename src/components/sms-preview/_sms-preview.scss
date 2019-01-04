@@ -132,7 +132,7 @@ $content-bg: #e6e6e9;
 	  position: relative;
 	  .tips-content {
 		display: none;
-		bottom: 100%;
+		bottom: calc(100% + 3px);
 		left: calc(100% - 100px - 24px);
 		position: absolute;
 		box-sizing: border-box;

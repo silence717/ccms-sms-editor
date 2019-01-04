@@ -10,5 +10,5 @@ import ddo from './SMSEditor';
 
 export default angular
 		.module('ccms.components.sms.smsEditor', [])
-		.directive('ccSmsEditor', () => ddo)
+		.directive('ccmsSmsEditor', () => ddo)
 		.name;

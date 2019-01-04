@@ -1,17 +1,16 @@
 {
   "name": "ccms-sms-editor",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "shuyun ccms sms editor",
   "keywords": [
     "angular",
     "es6",
     "sms-editor"
   ],
-  "main": "./ccms-sms-editor.js",
-  "style": "./ccms-sms-editor.css",
+  "main": "index.js",
   "scripts": {
     "release": "npm run build && npm publish dist",
-    "build": "NODE_ENV=production webpack --config webpack-build.config.js && cp package.json ./dist/package.json",
+    "build": "NODE_ENV=production webpack --config webpack-build.config.js && cp package.json ./dist/package.json && cp index.js ./dist/index.js",
     "start": "node server.js"
   },
   "devDependencies": {
