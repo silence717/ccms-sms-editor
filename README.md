@@ -1,4 +1,4 @@
-# ccms-sms
+# ccms-sms-editor
 短信编辑器
 
 
