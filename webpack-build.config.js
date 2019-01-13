@@ -1,8 +1,3 @@
-/**
- * @author Kuitos
- * @homepage https://github.com/kuitos/
- * @since 2015-08-06
- */
 var path = require('path');
 var webpack = require('webpack');
 var CleanPlugin = require('clean-webpack-plugin');
@@ -90,3 +85,5 @@ module.exports = {
 		rules: loaders
 	}
 };
+
+// if you want debug webpack, please run 'npm run debug:build' on console, then open the chrome, input chrome://inspect

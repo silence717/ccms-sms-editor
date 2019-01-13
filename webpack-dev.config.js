@@ -1,8 +1,3 @@
-/**
- * @author Kuitos
- * @homepage https://github.com/kuitos/
- * @since 2015-08-06
- */
 var path = require('path');
 var webpack = require('webpack');
 var loaders = require('./webpack-common-loaders');

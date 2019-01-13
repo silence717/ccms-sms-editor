@@ -11,7 +11,9 @@
   "scripts": {
     "release": "npm run build && npm publish dist",
     "build": "webpack --config webpack-build.config.js && cp package.json ./dist/package.json && cp index.js ./dist/index.js",
-    "start": "node server.js"
+    "start": "node server.js",
+    "debug": "node --inspect --inspect-brk ./node_modules/webpack/bin/webpack.js",
+    "build:debug": "npm run debug -- --config webpack-build.config.js"
   },
   "devDependencies": {
     "@babel/core": "^7.2.2",
