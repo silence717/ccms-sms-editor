@@ -18,6 +18,8 @@ app.use(require('webpack-dev-middleware')(compiler, {
 		colors: true,
 		cached: false
 	},
+	hot: true,
+	inline: true,
 	publicPath: config.output.publicPath
 }));
 
