@@ -149,8 +149,8 @@ export default class SMSEditorCtrl {
 			ARROW_PADDING = 45,
 			keywordLength = this.opts.keywords.reduce((result, keyword) => {
 				return result + (keyword._display
-						? keyword.text.length * 12 + HASH_WIDTH + PADDING + MARGIN
-						: 0);
+					? keyword.text.length * 12 + HASH_WIDTH + PADDING + MARGIN
+					: 0);
 			}, 0);
 
 		return keywordLength > this._content.clientWidth - ARROW_PADDING;
@@ -564,7 +564,7 @@ export default class SMSEditorCtrl {
 					if (preNode && preNode.nodeName === 'IMG') { // {keyword}{keyword}
 						this.focusNode(preNode);
 						$event.preventDefault();
-					} else if (preNode && preNode.nodeType === 3) {  // {text}{keyword}
+					} else if (preNode && preNode.nodeType === 3) { // {text}{keyword}
 						this.focusTextNode(preNode, preNode.length);
 						$event.preventDefault();
 					} else if (preNode === undefined && currentNode !== undefined) { // {keyword}
@@ -584,7 +584,7 @@ export default class SMSEditorCtrl {
 						if (range.startContainer.nextSibling) {
 							this.focusNode(range.startContainer.nextSibling);
 							$event.preventDefault();
-						} else {  // {text}
+						} else { // {text}
 							if (range.startContainer.parentNode && range.startContainer.parentNode.nextSibling) {
 								this.focusNode(range.startContainer.parentNode.nextSibling.firstChild, true);
 								$event.preventDefault();
@@ -595,7 +595,7 @@ export default class SMSEditorCtrl {
 					if (nextNode && nextNode.nodeName === 'IMG') { // {keyword}{keyword}
 						this.focusNode(nextNode);
 						$event.preventDefault();
-					} else if (nextNode === undefined) {  // {keyword}
+					} else if (nextNode === undefined) { // {keyword}
 						// 火狐下面莫名其妙加入一个 <br>
 						if (range.startContainer && range.startContainer.nextSibling && range.startContainer.nextSibling.nodeName === 'DIV') {
 							this.focusNode(range.startContainer.nextSibling.firstChild, true);

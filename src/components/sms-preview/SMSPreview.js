@@ -40,8 +40,8 @@ export default $sce => ({
 			scope.smsPreviewTipsInTipsText = $sce.trustAsHtml(opts.smsChargeTips || '单条短信字数限制 70 字；超出 70 字，按 67 字条计费；<br>字数和计费条数以实际执行时发送为准。');
 			// 字数统计
 			scope.totalChars = opts.totalCharts = text
-					.replace(varReg, '')
-					.replace(/þ_enter_þ/g, '').length +
+				.replace(varReg, '')
+				.replace(/þ_enter_þ/g, '').length +
 				(gatewayType === 1 || gatewayType === 3 || gatewayType === 4 || gatewayType === 5 ? signature.length : 0) +
 				customSignature.length +
 				unsubscribeText.length;
