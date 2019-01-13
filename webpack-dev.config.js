@@ -30,7 +30,7 @@ loaders.push(
 
 module.exports = {
 	mode: 'development',
-	devtool: 'source-map',
+	devtool: 'eval',
 	entry: {
 		components: ['webpack-hot-middleware/client?path=/__webpack_hmr&reload=true', './src/index.js']
 	},

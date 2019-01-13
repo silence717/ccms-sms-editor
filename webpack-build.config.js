@@ -24,7 +24,10 @@ loaders.push(
 		use: [{
 			loader: MiniCssExtractPlugin.loader
 		}, {
-			loader: 'css-loader'
+			loader: 'css-loader',
+			options: {
+				sourceMap: true
+			}
 		}, {
 			loader: 'postcss-loader'
 		}, {
@@ -41,7 +44,7 @@ loaders.push(
 
 module.exports = {
 	mode: 'production',
-	devtool: 'cheap-source-map',
+	devtool: 'source-map',
 	entry: {
 		'ccms-sms-editor': './src/index.js'
 	},
@@ -63,9 +66,12 @@ module.exports = {
 			new OptimizeCssAssetsPlugin({
 				assetNameRegExp: /\.css$/g,
 				cssProcessor: require('cssnano'),
-				cssProcessorPluginOptions: {
-					preset: ['default', cssNanoCommonOpts]
-				},
+				cssProcessorOptions: Object.assign({
+					core: false,
+					map: {
+						inline: false
+					}
+				}, cssNanoCommonOpts),
 				canPrint: true
 			})
 		]
