@@ -1,6 +1,6 @@
 {
   "name": "ccms-sms-editor",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "shuyun ccms sms editor",
   "keywords": [
     "angular",
@@ -9,9 +9,10 @@
   ],
   "main": "index.js",
   "scripts": {
-    "release": "npm run build && npm publish dist",
+    "release": "npm run patch && npm run build && npm publish dist",
     "build": "webpack --config webpack-build.config.js && cp package.json ./dist/package.json && cp index.js ./dist/index.js",
     "start": "node server.js",
+    "patch": "bump --patch --commit --push",
     "debug": "node --inspect --inspect-brk ./node_modules/webpack/bin/webpack.js",
     "build:debug": "npm run debug -- --config webpack-build.config.js"
   },
@@ -40,6 +41,7 @@
     "sass-loader": "^7.1.0",
     "style-loader": "^0.23.1",
     "uglifyjs-webpack-plugin": "^2.1.1",
+    "version-bump-prompt": "^4.2.2",
     "webpack": "^4.0.0",
     "webpack-cli": "^3.2.1",
     "webpack-dev-middleware": "^3.5.0",
