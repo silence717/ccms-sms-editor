@@ -640,7 +640,7 @@ export default class SMSEditorCtrl {
 
 		this.clearMozBr();
 
-		if ($event && $event.target.nodeName === 'INPUT') {
+		if ($event && ($event.target.nodeName === 'INPUT' || $event.target.nodeName === 'IMG')) {
 			this.focusNode($event.target);
 		}
 
