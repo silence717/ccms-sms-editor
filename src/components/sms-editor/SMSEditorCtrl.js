@@ -400,7 +400,7 @@ export default class SMSEditorCtrl {
 				this.reFocus();
 				// 当编辑区域为空的时候,Firefox 会自动加一个换行, 需要重置焦点
 				if (this._content.innerHTML === '<div><br></div>') {
-					console.log(this.focusNode(this._content.querySelector('br'), true));
+					this.focusNode(this._content.querySelector('br'), true);
 				}
 				document.execCommand('insertHTML', false, this.createInput(text, type, prefix, suffix));
 				this.clearMozBr();
