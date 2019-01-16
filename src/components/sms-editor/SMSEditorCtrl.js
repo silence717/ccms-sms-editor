@@ -777,8 +777,33 @@ export default class SMSEditorCtrl {
 	onPaste(e) {
 		const event = e.originalEvent || e,
 			htmlContent = event.clipboardData.getData('text/html');
-		if (htmlContent.indexOf('sms-keyword-inserted') > -1 || htmlContent.indexOf('data-emo-name') > -1) return;
+		if (htmlContent.indexOf('sms-keyword-inserted') > -1 || htmlContent.indexOf('data-emo-name') > -1) {
+			if (isFirefox) {
+				const range = window.getSelection().getRangeAt(0);
+				const node = range.startContainer; // 容器
+				// const preNode = node.childNodes[range.startOffset - 2];
+				const currentNode = node.childNodes[range.startOffset - 1];
+				const nextNode = node.childNodes[range.startOffset];
+				// 需要判断光标的位置, 决定html内容插入的位置
+				if (node.id === 'sms-content') { // 说明文本框为空, 光标在最开始
+					e.preventDefault();
+					document.execCommand('insertHTML', false, htmlContent);
+				} else if (node.nodeType === 1 && currentNode === undefined && nextNode.nodeName === 'BR') { // 内容为 <div><br/></div>
+					e.preventDefault();
+					this._content.innerHTML = '<br/>';
+					this.focusNode(this._content.querySelector('br'), true);
+					document.execCommand('insertHTML', false, htmlContent);
+				} else if (node.nodeType === 3) { // 在文本节点内黏贴内容
+					// 目前还搞不定
+				}
+				return;
+			} else {
+				return;
+			}
+		}
+
 		e.preventDefault();
+
 		const textContent = event.clipboardData.getData('text/plain');
 		const selection = document.getSelection();
 		const shortLinkHead = this.includedShortLink(textContent);
@@ -789,7 +814,12 @@ export default class SMSEditorCtrl {
 		} else {
 			this._hasInvalidStr = BRACKET_REG.test(textContent);
 			this._invalidStrClosed = !this._hasInvalidStr;
-			document.execCommand('insertText', false, textContent.replace(BRACKET_REG, ''));
+			if (isFirefox) {
+				document.execCommand('insertText', false, textContent.replace(BRACKET_REG, '').replace('\n'));
+			} else {
+				document.execCommand('insertText', false, textContent.replace(BRACKET_REG, ''));
+			}
+
 		}
 	}
 	checkoutShortLink() {
