@@ -1,8 +1,10 @@
 var path = require('path');
 var webpack = require('webpack');
-var loaders = require('./webpack-common-loaders');
+var merge = require('webpack-merge');
+var commonModule = require('./webpack-common-module');
+var commonPlugins = require('./webpack-common-plugins');
 
-loaders.push(
+commonModule.module.rules.push(
 	{
 		test: /\.(sc|c)ss$/,
 		use: [{
@@ -23,7 +25,7 @@ loaders.push(
 	}
 );
 
-module.exports = {
+module.exports = merge(commonModule, commonPlugins, {
 	mode: 'development',
 	devtool: 'source-map',
 	entry: {
@@ -39,8 +41,5 @@ module.exports = {
 	],
 	resolve: {
 		extensions: ['.js']
-	},
-	module: {
-		rules: loaders
 	}
-};
+});

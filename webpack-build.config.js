@@ -1,5 +1,6 @@
 var path = require('path');
 var webpack = require('webpack');
+var merge = require('webpack-merge');
 var CleanPlugin = require('clean-webpack-plugin');
 var MiniCssExtractPlugin = require('mini-css-extract-plugin');
 var UglifyJsPlugin = require('uglifyjs-webpack-plugin');
@@ -11,9 +12,9 @@ var cssNanoCommonOpts = {
 	minifyGradients: true
 };
 var OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
-var loaders = require('./webpack-common-loaders');
+var commonModule = require('./webpack-common-module');
 
-loaders.push(
+commonModule.module.rules.push(
 	{
 		test: /\.(sc|c)ss$/,
 		use: [{
@@ -37,7 +38,7 @@ loaders.push(
 	}
 );
 
-module.exports = {
+module.exports = merge(commonModule, {
 	mode: 'production',
 	devtool: 'source-map',
 	entry: {
@@ -80,10 +81,7 @@ module.exports = {
 	],
 	resolve: {
 		extensions: ['.js']
-	},
-	module: {
-		rules: loaders
 	}
-};
+});
 
 // if you want debug webpack, please run 'npm run debug:build' on console, then open the chrome, input chrome://inspect
