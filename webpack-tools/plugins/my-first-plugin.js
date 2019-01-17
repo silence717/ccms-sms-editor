@@ -1,3 +1,8 @@
+/* eslint-disable */
+/*
+* https://github.com/TheLarkInn/webpack-workshop-2018/blob/feature/0600-custom-webpack-plugins/build-utils/MyFirstWebpackPlugin.js
+* */
+
 class MyFirstPlugin {
 	apply(compiler) {
 		compiler.hooks.done.tapAsync('MyFirstPlugin', (stats, cb) => {
