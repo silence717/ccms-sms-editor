@@ -56,6 +56,12 @@ export default class SMSEditorCtrl {
 			this.reFocus();
 		});
 
+		if (isFirefox) { // 干掉 _moz_resizing
+			document.designMode = 'on';
+			document.execCommand('enableObjectResizing', false, 'false');
+			document.designMode = 'off';
+		}
+
 		// 对外暴露短信编辑器 API
 		this.opts.api = {
 			insertContent: this.insertContent.bind(this),
@@ -778,24 +784,30 @@ export default class SMSEditorCtrl {
 		const event = e.originalEvent || e,
 			htmlContent = event.clipboardData.getData('text/html');
 		if (htmlContent.indexOf('sms-keyword-inserted') > -1 || htmlContent.indexOf('data-emo-name') > -1) {
+			// TODO: 后期考虑使用 <p> 标签做段落处理, 这样可以使用 br 作为行内换行
 			if (isFirefox) {
-				const range = window.getSelection().getRangeAt(0);
-				const node = range.startContainer; // 容器
-				// const preNode = node.childNodes[range.startOffset - 2];
-				const currentNode = node.childNodes[range.startOffset - 1];
-				const nextNode = node.childNodes[range.startOffset];
-				// 需要判断光标的位置, 决定html内容插入的位置
-				if (node.id === 'sms-content') { // 说明文本框为空, 光标在最开始
-					e.preventDefault();
-					document.execCommand('insertHTML', false, htmlContent);
-				} else if (node.nodeType === 1 && currentNode === undefined && nextNode.nodeName === 'BR') { // 内容为 <div><br/></div>
-					e.preventDefault();
-					this._content.innerHTML = '<br/>';
-					this.focusNode(this._content.querySelector('br'), true);
-					document.execCommand('insertHTML', false, htmlContent);
-				} else if (node.nodeType === 3) { // 在文本节点内黏贴内容
-					// 目前还搞不定
-				}
+				// const range = window.getSelection().getRangeAt(0);
+				// const node = range.startContainer; // 容器
+				// // const preNode = node.childNodes[range.startOffset - 2];
+				// const currentNode = node.childNodes[range.startOffset - 1];
+				// const nextNode = node.childNodes[range.startOffset];
+				// // 需要判断光标的位置, 决定html内容插入的位置
+				// if (node.id === 'sms-content') { // 说明文本框为空, 光标在最开始
+				// 	e.preventDefault();
+				// 	document.execCommand('insertHTML', false, htmlContent);
+				// } else if (node.nodeType === 1 && currentNode === undefined && nextNode.nodeName === 'BR') { // 内容为 <div><br/></div>
+				// 	e.preventDefault();
+				// 	this._content.innerHTML = '<br/>';
+				// 	this.focusNode(this._content.querySelector('br'), true);
+				// 	document.execCommand('insertHTML', false, htmlContent);
+				// } else if (node.nodeType === 3) { // 在文本节点内黏贴内容
+				// 	// TODO: 临时处理 删除导致换行的 html 标签
+				// 	e.preventDefault();
+				// 	document.execCommand('insertHTML', false, htmlContent.replace(/<div>/g, '').replace(/<\/div>/g, '').replace(/<br>/g, ''));
+				// }
+				// 临时处理 删除导致换行的 html 标签
+				e.preventDefault();
+				document.execCommand('insertHTML', false, htmlContent.replace(/<div>/g, '').replace(/<\/div>/g, '').replace(/<br>/g, ''));
 				return;
 			} else {
 				return;
@@ -815,7 +827,7 @@ export default class SMSEditorCtrl {
 			this._hasInvalidStr = BRACKET_REG.test(textContent);
 			this._invalidStrClosed = !this._hasInvalidStr;
 			if (isFirefox) {
-				document.execCommand('insertText', false, textContent.replace(BRACKET_REG, '').replace('\n'));
+				document.execCommand('insertText', false, textContent.replace(BRACKET_REG, '').replace('\n', ''));
 			} else {
 				document.execCommand('insertText', false, textContent.replace(BRACKET_REG, ''));
 			}
