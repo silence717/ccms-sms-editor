@@ -3,14 +3,15 @@
  */
 
 import './_sms-preview.scss';
-import template from './sms-preview.tpl.html';
-import angular from 'angular';
+import * as angular from 'angular';
+const template = require('./sms-preview.tpl.html')
+// import template from './sms-preview.tpl.html';
 
-const escapeRegExp = str => {
+const escapeRegExp = (str: string) => {
 	return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&');
 };
 
-export default $sce => ({
+export default ($sce: ng.ISCEDelegateService) => ({
 
 	restrict: 'E',
 	scope: {
@@ -18,7 +19,7 @@ export default $sce => ({
 	},
 	template,
 
-	link(scope, element) {
+	link(scope: ng.IScope, element: ng.IRootElementService) {
 
 		const opts = scope.opts || (scope.opts = {});
 		const keywordPrefix = scope.opts.keywordPrefix || 'œœ';
@@ -37,6 +38,7 @@ export default $sce => ({
 			const customSignature = opts.customSignature ? `【${opts.customSignature.replace(/</g, '&lt;')}】` : '';
 			const unsubscribeText = opts.useUnsubscribe ? (opts.unsubscribeText || '') : '';
 
+			// @ts-ignore
 			scope.smsPreviewTipsInTipsText = $sce.trustAsHtml(opts.smsChargeTips ? `1.${opts.smsChargeTips}` : '1.当前通道单条短信字数限制 <span style="color: red;">70</span> 个字；超出 70 个字，按 <span style="color: red;">67</span> 字一条计费；');
 			// 字数统计
 			scope.totalChars = opts.totalCharts = text
@@ -62,7 +64,7 @@ export default $sce => ({
 	 2: 【自定义签名】+ 短信
 	 3,4: 备案签名 +【自定义签名】+ 短信
 	 */
-	generateText(preview, unsubscribeText, signature, customSignature, gatewayType) {
+	generateText(preview: string, unsubscribeText: string, signature: string, customSignature: string, gatewayType: number) {
 		const content = preview.split('þ_enter_þ');
 		const len = content.length;
 
@@ -91,7 +93,7 @@ export default $sce => ({
 	/**
 	 * 将空行标记格式化
 	 * */
-	formatEmpty(data) {
+	formatEmpty(data: Array<string>) {
 		const sms = [];
 		for (let item of data) {
 			const content = item.length ? `<div>${item}</div>` : '<div><br/></div>';

@@ -2,11 +2,10 @@
  * Created by AshZhang on 2016/1/18.
  */
 
-
 import './_sms-editor.scss';
-import template from './sms-editor.tpl.html';
 import SMSEditorCtrl from './SMSEditorCtrl';
-
+// import template from './sms-editor.tpl.html';
+const template = require('./sms-editor.tpl.html')
 
 export default {
 

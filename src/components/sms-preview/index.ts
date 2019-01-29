@@ -1,5 +1,5 @@
-import angular from 'angular';
-import ngSanitize from 'angular-sanitize';
+import * as angular from 'angular';
+import * as ngSanitize from 'angular-sanitize';
 import ddofn from './SMSPreview';
 
 

@@ -42,7 +42,7 @@ module.exports = merge(commonModule, {
 	mode: 'production',
 	devtool: 'source-map',
 	entry: {
-		'ccms-sms-editor': './src/index.js'
+		'ccms-sms-editor': './src/index.ts'
 	},
 	output: {
 		path: path.join(__dirname, 'dist'),
@@ -80,7 +80,7 @@ module.exports = merge(commonModule, {
 		})
 	],
 	resolve: {
-		extensions: ['.js']
+		extensions: ['.js', '.ts']
 	}
 });
 

@@ -20,7 +20,7 @@ module.exports = {
 				include: path.join(__dirname, 'src')
 			},
 			{
-				test: /\.js$/,
+				test: /\.(js|ts)$/,
 				exclude: /(node_modules|bower_components)/,
 				use: ['babel-loader', 'my-first-loader']
 			},
@@ -30,4 +30,4 @@ module.exports = {
 			}
 		]
 	}
-}
+};
