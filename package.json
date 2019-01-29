@@ -1,6 +1,6 @@
 {
   "name": "ccms-sms-editor",
-  "version": "0.0.9",
+  "version": "0.0.10-beta.0",
   "description": "shuyun ccms sms editor",
   "keywords": [
     "angular",
@@ -10,9 +10,11 @@
   "main": "index.js",
   "scripts": {
     "release": "npm run patch && npm run build && npm publish dist",
+    "test-release": "npm run test-patch && npm run build && npm publish dist",
     "build": "webpack --config webpack-build.config.js && cp package.json ./dist/package.json && cp index.js ./dist/index.js",
     "start": "node server.js",
     "patch": "bump --patch --commit --push",
+    "test-patch": "bump --prepatch --commit --push",
     "debug": "node --inspect --inspect-brk ./node_modules/webpack/bin/webpack.js",
     "build:debug": "npm run debug -- --config webpack-build.config.js",
     "start:debug": "npm run debug -- server.js",
