@@ -1,5 +1,4 @@
 var path = require('path');
-var webpack = require('webpack');
 var merge = require('webpack-merge');
 var CleanPlugin = require('clean-webpack-plugin');
 var MiniCssExtractPlugin = require('mini-css-extract-plugin');
