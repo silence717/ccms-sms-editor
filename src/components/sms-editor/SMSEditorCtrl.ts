@@ -1,7 +1,7 @@
 import * as angular from 'angular';
 import { opts, keyword } from '../../../typings/sms';
 
-const escapeRegExp = (str: string) => {
+const escapeRegExp = (str: string): string => {
 	return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&');
 };
 
@@ -97,7 +97,7 @@ export default class SMSEditorCtrl {
 	 * @param {string|undefined} type - 标签类型
 	 * @returns {string}
 	 */
-	static createTagPreview(keywords: Array<keyword>, text: string, type = '') {
+	static createTagPreview(keywords: Array<keyword>, text: string, type = ''): string {
 		(type === DEFAULT_TYPE_NAME) && (type = undefined);
 
 		const matchedTag = keywords.filter(item => {
@@ -114,7 +114,7 @@ export default class SMSEditorCtrl {
 	 * @param text
 	 * @returns {string}
 	 */
-	static flatCode(text: string = '', trimContent: boolean = true) {
+	static flatCode(text: string = '', trimContent: boolean = true): string {
 		// 待重构
 		if (trimContent) {
 			return text.replace(/(&nbsp;?)|(&lt;?)|(&gt;?)|(&amp;?)/g, result => {
@@ -128,7 +128,7 @@ export default class SMSEditorCtrl {
 		}
 	}
 
-	static wrap(keyword: keyword, arg = {}) {
+	static wrap(keyword: keyword, arg = {}): string {
 		const obj = Object.assign({prefix: '', suffix: ''}, arg);
 		return `${obj.prefix}${keyword}${obj.suffix}`;
 	}
@@ -136,7 +136,7 @@ export default class SMSEditorCtrl {
 	/**
 	 * 整理关键词数据, 确定默认显示的关键词分类
 	 */
-	initKeywords() {
+	initKeywords(): void {
 		!this.opts.keywords && (this.opts.keywords = []);
 
 		this.keywordTypes = this.opts.keywords.reduce((types, keyword) => {
@@ -154,7 +154,7 @@ export default class SMSEditorCtrl {
 	 * 设置需要显示的变量类型
 	 * @param type
 	 */
-	setKeywordType(type: string) {
+	setKeywordType(type: string): void {
 		this.keywordTypeDisplay = type;
 
 		this.opts.keywords.forEach(keyword => {
@@ -167,7 +167,7 @@ export default class SMSEditorCtrl {
 	 * 判断是否要展示箭头
 	 * @returns {boolean}
 	 */
-	testShowToggleOrNot() {
+	testShowToggleOrNot(): boolean {
 		const HASH_WIDTH = 7,
 			PADDING = 20,
 			MARGIN = 5,
@@ -186,7 +186,7 @@ export default class SMSEditorCtrl {
 	 * 初始化内容
 	 * @param {string} content - 初始文字
 	 */
-	initContent(content: string) {
+	initContent(content: string): void {
 		this._content.innerHTML = this.formatContent(this.parseTag(content));
 		this.checkEmpty();
 		this.parseHTML();
@@ -198,7 +198,7 @@ export default class SMSEditorCtrl {
 	 * 有手动输入的淘短链时，初始化淘短链tips框的显示
 	 * @param {string} content - 初始文字
 	 */
-	initShortLink() {
+	initShortLink(): void {
 		const shortLinkReg = new RegExp(/(?:c\.tb\.cn|vcrm\.me|t\.cn)[^<&\s\u4e00-\u9fa5]*/, 'g');
 		if (shortLinkReg.test(this._content.innerHTML)) {
 			this._content.innerHTML = this._content.innerHTML.replace(shortLinkReg, result => `<a class="shortLinkTips" href=" ">${result}</a>`);
@@ -222,7 +222,7 @@ export default class SMSEditorCtrl {
 	 * @param {string} type - 标签类型
 	 * @returns {string}
 	 */
-	createInput(text: string, type = DEFAULT_TYPE_NAME, prefix = '', suffix = '') {
+	createInput(text: string, type = DEFAULT_TYPE_NAME, prefix = '', suffix = ''): string {
 		// 暂时不需要
 		// const padding = (this.keywordTypes.length < 1 || !type) ? 0 : 1.5;
 
@@ -236,7 +236,7 @@ export default class SMSEditorCtrl {
 		}
 	}
 
-	getTextWidth(text: string) {
+	getTextWidth(text: string): number {
 		let element = document.createElement('div');
 		element.className = 'sms-content';
 		element.style.display = 'inline-block';
@@ -257,7 +257,7 @@ export default class SMSEditorCtrl {
 	 * @param {string} name - 图片名称
 	 * @returns {string}
 	 */
-	createImage(name: string) {
+	createImage(name: string): string {
 		return `<img data-emo-name="${name}" src="${this.EMO_BASE_URL}${name}.gif">`;
 	}
 
@@ -267,7 +267,7 @@ export default class SMSEditorCtrl {
 	 * @param {string} text - 短信数据
 	 * @returns {string}
 	 */
-	parseTag(text = '') {
+	parseTag(text = ''): string {
 		const varReg = RegExp(`${escapeRegExp(this.keywordPrefix)}_(?:\\[(\\S*?)])?(.+?)_${escapeRegExp(this.keywordSuffix)}`, 'g');
 		return SMSEditorCtrl.flatCode(text, this.trimContent)
 			.replace(varReg, (result, $1, $2) => {
@@ -283,7 +283,7 @@ export default class SMSEditorCtrl {
 	 * - false: 输入 name, 转出 text
 	 * @returns {*}
 	 */
-	keywordTextNameConvert(arg: string, argIsText = true) {
+	keywordTextNameConvert(arg: string, argIsText = true): string {
 		const keywords = this.opts.keywords;
 
 		let matchedKeyword: keyword;
@@ -303,7 +303,7 @@ export default class SMSEditorCtrl {
 	 * - false: 通过 name, 获取 keyword
 	 * */
 
-	getKeywordConfig(arg: string, argIsText = true) {
+	getKeywordConfig(arg: string, argIsText = true): keyword {
 		const keywords = this.opts.keywords;
 
 		let matchedKeyword;
@@ -320,7 +320,7 @@ export default class SMSEditorCtrl {
 	 * @param {string} text - 短信数据
 	 * @returns {string}
 	 */
-	parseImage(text: string) {
+	parseImage(text: string): string {
 		return text.replace(/\{([^}]+)}/g, (result, $1) => {
 			return this.createImage($1);
 		});
@@ -329,7 +329,7 @@ export default class SMSEditorCtrl {
 	/**
 	 * 格式化短信数据
 	 * */
-	formatContent(text: string) {
+	formatContent(text: string): string {
 		const data = text.split('þ_enter_þ');
 		const sms = [];
 		for (let item of data) {
@@ -346,7 +346,7 @@ export default class SMSEditorCtrl {
 	/**
 	 * 解析富文本编辑器中的 HTML, 生成预览文本和最终存到服务器的文本
 	 */
-	parseHTML() {
+	parseHTML(): void {
 		let parsed = this._content.innerHTML.trim()
 			.replace(/disabled(="[^"]*")?/i, '')
 			.replace(/style="[^"]+"/i, '')
@@ -413,7 +413,7 @@ export default class SMSEditorCtrl {
 	 * @param {string} prefix - 前缀
 	 * @param {string} suffix - 后缀
 	 */
-	insertKeyword(text: string, type: string, disabled: boolean, prefix: string, suffix: string) {
+	insertKeyword(text: string, type: string, disabled: boolean, prefix: string, suffix: string): void {
 		if (!disabled) {
 			if (isFirefox) {
 				// TODO: 单前缀和单后缀 光标位置记录
@@ -521,7 +521,7 @@ export default class SMSEditorCtrl {
 	/**
 	 * 聚焦Node节点的前面还是后面
 	 */
-	focusNode(node: Node, isBefore = false) {
+	focusNode(node: Node, isBefore = false): Range {
 		const range = document.createRange();
 		range.selectNode(node);
 		range.collapse(isBefore);
