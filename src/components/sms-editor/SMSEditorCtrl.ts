@@ -21,7 +21,7 @@ const htmlEntityCode: any = {
 
 export default class SMSEditorCtrl {
 	public showTips: boolean;
-	public opts: opts = {};
+	public opts: opts = this.opts || {};
 	public keywordPrefix: string;
 	public keywordSuffix: string;
 	public trimContent?: boolean = true;
