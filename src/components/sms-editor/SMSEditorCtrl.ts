@@ -25,7 +25,7 @@ export default class SMSEditorCtrl {
 	public keywordPrefix: string;
 	public keywordSuffix: string;
 	public trimContent?: boolean = true;
-	public _content: Element;
+	public _content: HTMLTextAreaElement;
 	public _tempHolder: Element;
 	public keywordTypes: Array<string>;
 	public EMO_BASE_URL: string;
@@ -55,8 +55,8 @@ export default class SMSEditorCtrl {
 		this.keywordSuffix = this.opts.keywordSuffix || 'œœ';
 
 		this.trimContent = angular.isDefined(this.opts.trimContent) ? this.opts.trimContent : true;
-		this._content = $element[0].querySelector('[data-content]');
-		this._tempHolder = $element[0].querySelector('.sms-temp');
+		this._content = $element[0].querySelector('[data-content]') as HTMLTextAreaElement;
+		this._tempHolder = $element[0].querySelector('.sms-temp') as Element;
 		this.initKeywords();
 		this.initContent(this.opts.content);
 
@@ -484,7 +484,6 @@ export default class SMSEditorCtrl {
 				selection.addRange(this._range);
 			}
 		} else {
-			// @ts-ignore
 			this._content.focus();
 
 			const range = document.createRange();
@@ -516,8 +515,7 @@ export default class SMSEditorCtrl {
 	 * 如果文本编辑器为空, 为其添加 empty 样式
 	 */
 	checkEmpty() {
-		// @ts-ignore
-		this._content.parentNode.classList[this._content.innerHTML.length ? 'remove' : 'add']('empty');
+		(this._content.parentNode as HTMLElement).classList[this._content.innerHTML.length ? 'remove' : 'add']('empty');
 	}
 
 	/**
@@ -556,7 +554,7 @@ export default class SMSEditorCtrl {
 
 	keydownHandler($event: Event) {
 		if (isFirefox) {
-			this.controlCursor($event);
+			this.controlCursor($event as KeyboardEvent);
 		}
 	}
 
@@ -565,14 +563,13 @@ export default class SMSEditorCtrl {
 		br ? br.parentNode.removeChild(br) : angular.noop();
 	}
 
-	controlCursor($event: Event) {
+	controlCursor($event: KeyboardEvent) {
 		const range: Range = window.getSelection().getRangeAt(0);
 		const node = range.startContainer;
 		const preNode = node.childNodes[range.startOffset - 2];
 		const currentNode = node.childNodes[range.startOffset - 1];
 		const nextNode = node.childNodes[range.startOffset];
 
-		// @ts-ignore
 		switch ($event.keyCode) {
 			case 37: // left
 				if (node && node.nodeType === 3) {
@@ -665,10 +662,9 @@ export default class SMSEditorCtrl {
 	onChange($event: Event) {
 
 		this.clearMozBr();
-		// @ts-ignore
-		if ($event && ($event.target.nodeName === 'INPUT' || $event.target.nodeName === 'IMG')) {
-			// @ts-ignore
-			this.focusNode($event.target);
+		const target: Node = $event.target as Node;
+		if ($event && (target.nodeName === 'INPUT' || target.nodeName === 'IMG')) {
+			this.focusNode(target);
 		}
 
 		this.rememberFocus();
@@ -805,9 +801,8 @@ export default class SMSEditorCtrl {
 	 * - 这条代码如果在 firefox 里跑通了, 晚上就去吃大餐 by AshZhang@2016.3.29
 	 * @param e
 	 */
-	onPaste(e: ng.IAngularEvent) {
-		// @ts-ignore
-		const event = e.originalEvent || e,
+	onPaste(e: ClipboardEvent) {
+		const event = e,
 			htmlContent = event.clipboardData.getData('text/html');
 		if (htmlContent.indexOf('sms-keyword-inserted') > -1 || htmlContent.indexOf('data-emo-name') > -1) {
 			// TODO: 后期考虑使用 <p> 标签做段落处理, 这样可以使用 br 作为行内换行
