@@ -1,6 +1,6 @@
 {
   "name": "ccms-sms-editor",
-  "version": "0.0.9",
+  "version": "0.0.11",
   "description": "shuyun ccms sms editor",
   "keywords": [
     "angular",
@@ -10,16 +10,23 @@
   "main": "index.js",
   "scripts": {
     "release": "npm run patch && npm run build && npm publish dist",
+    "test-release": "npm run test-patch && npm run build && npm publish dist",
     "build": "webpack --config webpack-build.config.js && cp package.json ./dist/package.json && cp index.js ./dist/index.js",
     "start": "node server.js",
     "patch": "bump --patch --commit --push",
+    "test-patch": "bump --prepatch --commit --push",
     "debug": "node --inspect --inspect-brk ./node_modules/webpack/bin/webpack.js",
     "build:debug": "npm run debug -- --config webpack-build.config.js",
-    "start:debug": "npm run debug -- server.js"
+    "start:debug": "npm run debug -- server.js",
+    "check-types": "tsc"
   },
   "devDependencies": {
     "@babel/core": "^7.2.2",
-    "@babel/preset-env": "^7.2.3",
+    "@babel/plugin-proposal-class-properties": "^7.3.0",
+    "@babel/plugin-proposal-object-rest-spread": "^7.3.1",
+    "@babel/preset-env": "^7.3.1",
+    "@babel/preset-typescript": "^7.1.0",
+    "@types/webpack-env": "^1.13.6",
     "autoprefixer": "^6.3.6",
     "babel-eslint": "^10.0.1",
     "babel-loader": "^8.0.5",
@@ -41,6 +48,7 @@
     "resolve-url-loader": "^3.0.0",
     "sass-loader": "^7.1.0",
     "style-loader": "^0.23.1",
+    "typescript": "^3.2.4",
     "uglifyjs-webpack-plugin": "^2.1.1",
     "version-bump-prompt": "^4.2.2",
     "webpack": "^4.0.0",
@@ -54,6 +62,9 @@
     "angular-sanitize": "1.5.8"
   },
   "dependencies": {
+    "@types/angular": "1.5.8",
+    "@types/angular-sanitize": "^1.3.7",
+    "@types/dom-helpers": "^3.4.0",
     "angular": "1.5.8",
     "angular-sanitize": "1.5.8"
   },

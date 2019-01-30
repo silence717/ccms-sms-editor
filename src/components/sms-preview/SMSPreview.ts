@@ -3,14 +3,16 @@
  */
 
 import './_sms-preview.scss';
-import template from './sms-preview.tpl.html';
-import angular from 'angular';
+import * as angular from 'angular';
+import { opts } from '../../../typings/sms';
+const template = require('./sms-preview.tpl.html')
+// import template from './sms-preview.tpl.html';
 
-const escapeRegExp = str => {
+const escapeRegExp = (str: string) => {
 	return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&');
 };
 
-export default $sce => ({
+export default ($sce: ng.ISCEDelegateService) => ({
 
 	restrict: 'E',
 	scope: {
@@ -18,12 +20,12 @@ export default $sce => ({
 	},
 	template,
 
-	link(scope, element) {
+	link(scope: ng.IScope, element: ng.IRootElementService) {
 
-		const opts = scope.opts || (scope.opts = {});
-		const keywordPrefix = scope.opts.keywordPrefix || 'œœ';
-		const keywordSuffix = scope.opts.keywordSuffix || 'œœ';
-		const trimContent = angular.isDefined(opts.trimContent) ? opts.trimContent : true;
+		const opts: opts = scope.opts || (scope.opts = {});
+		const keywordPrefix: string = scope.opts.keywordPrefix || 'œœ';
+		const keywordSuffix: string = scope.opts.keywordSuffix || 'œœ';
+		const trimContent: boolean = angular.isDefined(opts.trimContent) ? opts.trimContent : true;
 		scope.smsPreviewStatText = trimContent ? '不含变量' : '含空格，不含变量';
 		scope.smsPreviewTipsText = trimContent ? '2.上图仅为操作预览，最终字数和计费条数以实际执行时发送为准。' : '2.上图仅为操作预览，变量无固定长度，最终字数和计费条数以实际执行时发送为准，建议先测试执行。';
 
@@ -37,6 +39,7 @@ export default $sce => ({
 			const customSignature = opts.customSignature ? `【${opts.customSignature.replace(/</g, '&lt;')}】` : '';
 			const unsubscribeText = opts.useUnsubscribe ? (opts.unsubscribeText || '') : '';
 
+			// @ts-ignore $sce 上没有定义 trustAsHtml 方法
 			scope.smsPreviewTipsInTipsText = $sce.trustAsHtml(opts.smsChargeTips ? `1.${opts.smsChargeTips}` : '1.当前通道单条短信字数限制 <span style="color: red;">70</span> 个字；超出 70 个字，按 <span style="color: red;">67</span> 字一条计费；');
 			// 字数统计
 			scope.totalChars = opts.totalCharts = text
@@ -62,7 +65,7 @@ export default $sce => ({
 	 2: 【自定义签名】+ 短信
 	 3,4: 备案签名 +【自定义签名】+ 短信
 	 */
-	generateText(preview, unsubscribeText, signature, customSignature, gatewayType) {
+	generateText(preview: string, unsubscribeText: string, signature: string, customSignature: string, gatewayType: number) {
 		const content = preview.split('þ_enter_þ');
 		const len = content.length;
 
@@ -91,10 +94,10 @@ export default $sce => ({
 	/**
 	 * 将空行标记格式化
 	 * */
-	formatEmpty(data) {
-		const sms = [];
+	formatEmpty(data: string[]) {
+		const sms: string[] = [];
 		for (let item of data) {
-			const content = item.length ? `<div>${item}</div>` : '<div><br/></div>';
+			const content: string = item.length ? `<div>${item}</div>` : '<div><br/></div>';
 			sms.push(content);
 		}
 		return sms.join('');

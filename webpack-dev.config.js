@@ -29,7 +29,7 @@ module.exports = merge(commonModule, commonPlugins, {
 	mode: 'development',
 	devtool: 'source-map',
 	entry: {
-		components: ['webpack-hot-middleware/client?path=/__webpack_hmr&reload=true', './src/index.js']
+		components: ['webpack-hot-middleware/client?path=/__webpack_hmr&reload=true', './src/index.ts']
 	},
 	output: {
 		path: path.join(__dirname, 'build'),
@@ -40,6 +40,6 @@ module.exports = merge(commonModule, commonPlugins, {
 		new webpack.HotModuleReplacementPlugin()
 	],
 	resolve: {
-		extensions: ['.js']
+		extensions: ['.js', '.ts']
 	}
 });

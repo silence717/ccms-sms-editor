@@ -1,10 +1,7 @@
-/**
- * Created by AshZhang on 2016/1/18.
- */
+import * as angular from 'angular';
+import { opts, keyword } from '../../../typings/sms';
 
-import angular from 'angular';
-
-const escapeRegExp = str => {
+const escapeRegExp = (str: string): string => {
 	return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&');
 };
 
@@ -15,10 +12,33 @@ const REG_URL_HASH = new RegExp(regUrlBase + '#');
 const DEFAULT_TYPE_NAME = 'default';
 const BRACKET_REG = /[【】œþ]/g; // 特殊字符
 const isFirefox = navigator.userAgent.indexOf('Firefox') !== -1;
-
+const htmlEntityCode: any = {
+	'&nbsp;': ' ',
+	'&lt;': '<',
+	'&gt;': '>',
+	'&amp;': '&'
+};
 
 export default class SMSEditorCtrl {
-	constructor($scope, $element) {
+	public showTips: boolean;
+	public opts: opts = this.opts || {};
+	public keywordPrefix: string;
+	public keywordSuffix: string;
+	public trimContent?: boolean = true;
+	public _content: HTMLTextAreaElement;
+	public _tempHolder: Element;
+	public keywordTypes: Array<string>;
+	public EMO_BASE_URL: string;
+	public keywordTypeDisplay: string;
+	public _range: Range;
+	public $scope: ng.IScope;
+	public $timeout: ng.ITimeoutService;
+	public _hasInvalidStr: boolean;
+	public _invalidStrClosed: boolean;
+	public _hasUrl: boolean;
+
+
+	constructor($scope: ng.IScope, $element: ng.IRootElementService, $timeout: ng.ITimeoutService) {
 		this.showTips = false;
 		this.createInput = this.createInput.bind(this);
 		this.parseHTML = this.parseHTML.bind(this);
@@ -27,31 +47,30 @@ export default class SMSEditorCtrl {
 		this.rememberFocus = this.rememberFocus.bind(this);
 		this.onChange = this.onChange.bind(this);
 		this.checkoutShortLink = this.checkoutShortLink.bind(this);
-
+		this.$scope = $scope;
+		this.$timeout = $timeout;
 
 		// 初始化编辑框及显示
-		this.opts || (this.opts = {});
 		this.keywordPrefix = this.opts.keywordPrefix || 'œœ';
 		this.keywordSuffix = this.opts.keywordSuffix || 'œœ';
 
 		this.trimContent = angular.isDefined(this.opts.trimContent) ? this.opts.trimContent : true;
-
-		this._content = $element[0].querySelector('[data-content]');
-		this._tempHolder = $element[0].querySelector('.sms-temp');
+		this._content = $element[0].querySelector('[data-content]') as HTMLTextAreaElement;
+		this._tempHolder = $element[0].querySelector('.sms-temp') as Element;
 		this.initKeywords();
 		this.initContent(this.opts.content);
 
 		this._content.addEventListener('input', this.onChange, false);
 
 		// 异步加载
-		$scope.$watch('ctrl.opts.keywords', (newVal, oldVal) => {
+		$scope.$watch('ctrl.opts.keywords', (newVal: Array<keyword>, oldVal: Array<keyword>) => {
 			if (!(newVal && newVal.length === 0 && oldVal && oldVal.length === 0)) {
 				this.initKeywords();
 				this.initContent(this.opts.content || '');
 			}
 		});
 
-		$scope.$watch('ctrl.opts.content', newVal => {
+		$scope.$watch('ctrl.opts.content', (newVal: string) => {
 			this.initContent(newVal || '');
 			this.reFocus();
 		});
@@ -78,7 +97,7 @@ export default class SMSEditorCtrl {
 	 * @param {string|undefined} type - 标签类型
 	 * @returns {string}
 	 */
-	static createTagPreview(keywords, text, type = '') {
+	static createTagPreview(keywords: Array<keyword>, text: string, type = ''): string {
 		(type === DEFAULT_TYPE_NAME) && (type = undefined);
 
 		const matchedTag = keywords.filter(item => {
@@ -95,7 +114,7 @@ export default class SMSEditorCtrl {
 	 * @param text
 	 * @returns {string}
 	 */
-	static flatCode(text = '', trimContent = true) {
+	static flatCode(text: string = '', trimContent: boolean = true): string {
 		// 待重构
 		if (trimContent) {
 			return text.replace(/(&nbsp;?)|(&lt;?)|(&gt;?)|(&amp;?)/g, result => {
@@ -109,7 +128,7 @@ export default class SMSEditorCtrl {
 		}
 	}
 
-	static wrap(keyword, arg = {}) {
+	static wrap(keyword: keyword, arg = {}): string {
 		const obj = Object.assign({prefix: '', suffix: ''}, arg);
 		return `${obj.prefix}${keyword}${obj.suffix}`;
 	}
@@ -117,7 +136,7 @@ export default class SMSEditorCtrl {
 	/**
 	 * 整理关键词数据, 确定默认显示的关键词分类
 	 */
-	initKeywords() {
+	initKeywords(): void {
 		!this.opts.keywords && (this.opts.keywords = []);
 
 		this.keywordTypes = this.opts.keywords.reduce((types, keyword) => {
@@ -135,7 +154,7 @@ export default class SMSEditorCtrl {
 	 * 设置需要显示的变量类型
 	 * @param type
 	 */
-	setKeywordType(type) {
+	setKeywordType(type: string): void {
 		this.keywordTypeDisplay = type;
 
 		this.opts.keywords.forEach(keyword => {
@@ -148,7 +167,7 @@ export default class SMSEditorCtrl {
 	 * 判断是否要展示箭头
 	 * @returns {boolean}
 	 */
-	testShowToggleOrNot() {
+	testShowToggleOrNot(): boolean {
 		const HASH_WIDTH = 7,
 			PADDING = 20,
 			MARGIN = 5,
@@ -167,7 +186,7 @@ export default class SMSEditorCtrl {
 	 * 初始化内容
 	 * @param {string} content - 初始文字
 	 */
-	initContent(content) {
+	initContent(content: string): void {
 		this._content.innerHTML = this.formatContent(this.parseTag(content));
 		this.checkEmpty();
 		this.parseHTML();
@@ -179,11 +198,11 @@ export default class SMSEditorCtrl {
 	 * 有手动输入的淘短链时，初始化淘短链tips框的显示
 	 * @param {string} content - 初始文字
 	 */
-	initShortLink() {
+	initShortLink(): void {
 		const shortLinkReg = new RegExp(/(?:c\.tb\.cn|vcrm\.me|t\.cn)[^<&\s\u4e00-\u9fa5]*/, 'g');
 		if (shortLinkReg.test(this._content.innerHTML)) {
 			this._content.innerHTML = this._content.innerHTML.replace(shortLinkReg, result => `<a class="shortLinkTips" href=" ">${result}</a>`);
-			const shortLinkTags = document.getElementById('sms-content').querySelectorAll('.shortLinkTips');
+			const shortLinkTags: NodeListOf<HTMLElement> = document.getElementById('sms-content').querySelectorAll('.shortLinkTips');
 			if (shortLinkTags.length > 0) {
 				// 只让第一个逃短链在打开时候自动弹出提
 				for (let i = 0; i < shortLinkTags.length; i++) {
@@ -203,7 +222,7 @@ export default class SMSEditorCtrl {
 	 * @param {string} type - 标签类型
 	 * @returns {string}
 	 */
-	createInput(text, type = DEFAULT_TYPE_NAME, prefix = '', suffix = '') {
+	createInput(text: string, type = DEFAULT_TYPE_NAME, prefix = '', suffix = ''): string {
 		// 暂时不需要
 		// const padding = (this.keywordTypes.length < 1 || !type) ? 0 : 1.5;
 
@@ -217,11 +236,11 @@ export default class SMSEditorCtrl {
 		}
 	}
 
-	getTextWidth(text) {
+	getTextWidth(text: string): number {
 		let element = document.createElement('div');
 		element.className = 'sms-content';
 		element.style.display = 'inline-block';
-		element.style.opacity = 0;
+		element.style.opacity = '0';
 		element.innerHTML = text;
 		document.body.appendChild(element);
 
@@ -238,7 +257,7 @@ export default class SMSEditorCtrl {
 	 * @param {string} name - 图片名称
 	 * @returns {string}
 	 */
-	createImage(name) {
+	createImage(name: string): string {
 		return `<img data-emo-name="${name}" src="${this.EMO_BASE_URL}${name}.gif">`;
 	}
 
@@ -248,7 +267,7 @@ export default class SMSEditorCtrl {
 	 * @param {string} text - 短信数据
 	 * @returns {string}
 	 */
-	parseTag(text = '') {
+	parseTag(text = ''): string {
 		const varReg = RegExp(`${escapeRegExp(this.keywordPrefix)}_(?:\\[(\\S*?)])?(.+?)_${escapeRegExp(this.keywordSuffix)}`, 'g');
 		return SMSEditorCtrl.flatCode(text, this.trimContent)
 			.replace(varReg, (result, $1, $2) => {
@@ -264,10 +283,10 @@ export default class SMSEditorCtrl {
 	 * - false: 输入 name, 转出 text
 	 * @returns {*}
 	 */
-	keywordTextNameConvert(arg, argIsText = true) {
+	keywordTextNameConvert(arg: string, argIsText = true): string {
 		const keywords = this.opts.keywords;
 
-		let matchedKeyword;
+		let matchedKeyword: keyword;
 
 		if (keywords && keywords.length) {
 			matchedKeyword = keywords.find(keyword => keyword[argIsText ? 'text' : 'name'] === arg);
@@ -284,7 +303,7 @@ export default class SMSEditorCtrl {
 	 * - false: 通过 name, 获取 keyword
 	 * */
 
-	getKeywordConfig(arg, argIsText = true) {
+	getKeywordConfig(arg: string, argIsText = true): keyword {
 		const keywords = this.opts.keywords;
 
 		let matchedKeyword;
@@ -301,7 +320,7 @@ export default class SMSEditorCtrl {
 	 * @param {string} text - 短信数据
 	 * @returns {string}
 	 */
-	parseImage(text) {
+	parseImage(text: string): string {
 		return text.replace(/\{([^}]+)}/g, (result, $1) => {
 			return this.createImage($1);
 		});
@@ -310,7 +329,7 @@ export default class SMSEditorCtrl {
 	/**
 	 * 格式化短信数据
 	 * */
-	formatContent(text) {
+	formatContent(text: string): string {
 		const data = text.split('þ_enter_þ');
 		const sms = [];
 		for (let item of data) {
@@ -327,7 +346,7 @@ export default class SMSEditorCtrl {
 	/**
 	 * 解析富文本编辑器中的 HTML, 生成预览文本和最终存到服务器的文本
 	 */
-	parseHTML() {
+	parseHTML(): void {
 		let parsed = this._content.innerHTML.trim()
 			.replace(/disabled(="[^"]*")?/i, '')
 			.replace(/style="[^"]+"/i, '')
@@ -363,12 +382,7 @@ export default class SMSEditorCtrl {
 			})
 			.replace(/<[^>]+>/g, '')
 			.replace(/(&nbsp;)|(&lt;)|(&gt;)|(&amp;)/g, result => {
-				return {
-					'&nbsp;': ' ',
-					'&lt;': '<',
-					'&gt;': '>',
-					'&amp;': '&'
-				}[result];
+				return htmlEntityCode[result];
 			});
 		if (this.trimContent) {
 			this.opts.text = this.opts.text.trim();
@@ -399,7 +413,7 @@ export default class SMSEditorCtrl {
 	 * @param {string} prefix - 前缀
 	 * @param {string} suffix - 后缀
 	 */
-	insertKeyword(text, type, disabled, prefix, suffix) {
+	insertKeyword(text: string, type: string, disabled: boolean, prefix: string, suffix: string): void {
 		if (!disabled) {
 			if (isFirefox) {
 				// TODO: 单前缀和单后缀 光标位置记录
@@ -416,6 +430,7 @@ export default class SMSEditorCtrl {
 					let offset = this._range.startOffset;
 					this._range = this.focusNode(this._range.startContainer.childNodes[offset]);
 				} else if (this._range.startContainer.nodeType === 3) {
+					// @ts-ignore
 					if (this._range.startContainer.length === this._range.startOffset) {
 						if (this._range.startContainer.nextSibling) {
 							this._range = this.focusNode(this._range.startContainer.nextSibling);
@@ -434,7 +449,7 @@ export default class SMSEditorCtrl {
 	 * 往富文本编辑器中插入表情图片
 	 * @param {string} emo - 图片名称
 	 */
-	insertEmo(emo) {
+	insertEmo(emo: string) {
 		this.reFocus();
 		document.execCommand('insertHTML', false, this.createImage(emo));
 	}
@@ -443,7 +458,7 @@ export default class SMSEditorCtrl {
 	 * 往富文本编辑器中插入文本内容
 	 * @param {string} content - 文本内容
 	 */
-	insertContent(content) {
+	insertContent(content: string) {
 		this.reFocus();
 		document.execCommand('insertHTML', false, content);
 	}
@@ -500,13 +515,13 @@ export default class SMSEditorCtrl {
 	 * 如果文本编辑器为空, 为其添加 empty 样式
 	 */
 	checkEmpty() {
-		this._content.parentNode.classList[this._content.innerHTML.length ? 'remove' : 'add']('empty');
+		(this._content.parentNode as HTMLElement).classList[this._content.innerHTML.length ? 'remove' : 'add']('empty');
 	}
 
 	/**
 	 * 聚焦Node节点的前面还是后面
 	 */
-	focusNode(node, isBefore = false) {
+	focusNode(node: Node, isBefore = false): Range {
 		const range = document.createRange();
 		range.selectNode(node);
 		range.collapse(isBefore);
@@ -516,7 +531,7 @@ export default class SMSEditorCtrl {
 		return range;
 	}
 
-	focusTextNode(textNode, offset) {
+	focusTextNode(textNode: Node, offset: number) {
 		const range = document.createRange();
 		range.setStart(textNode, offset);
 		range.setEnd(textNode, offset);
@@ -528,7 +543,7 @@ export default class SMSEditorCtrl {
 	/**
 	 * 删除Node
 	 */
-	deleteNode(node) {
+	deleteNode(node: Node) {
 		const range = document.createRange();
 		range.selectNode(node);
 		const selection = window.getSelection();
@@ -537,9 +552,9 @@ export default class SMSEditorCtrl {
 		document.execCommand('delete', false, null);
 	}
 
-	keydownHandler($event) {
+	keydownHandler($event: Event) {
 		if (isFirefox) {
-			this.controlCursor($event);
+			this.controlCursor($event as KeyboardEvent);
 		}
 	}
 
@@ -548,8 +563,8 @@ export default class SMSEditorCtrl {
 		br ? br.parentNode.removeChild(br) : angular.noop();
 	}
 
-	controlCursor($event) {
-		const range = window.getSelection().getRangeAt(0);
+	controlCursor($event: KeyboardEvent) {
+		const range: Range = window.getSelection().getRangeAt(0);
 		const node = range.startContainer;
 		const preNode = node.childNodes[range.startOffset - 2];
 		const currentNode = node.childNodes[range.startOffset - 1];
@@ -575,6 +590,7 @@ export default class SMSEditorCtrl {
 						this.focusNode(preNode);
 						$event.preventDefault();
 					} else if (preNode && preNode.nodeType === 3) { // {text}{keyword}
+						// @ts-ignore
 						this.focusTextNode(preNode, preNode.length);
 						$event.preventDefault();
 					} else if (preNode === undefined && currentNode !== undefined) { // {keyword}
@@ -590,6 +606,7 @@ export default class SMSEditorCtrl {
 				break;
 			case 39: // right
 				if (node && node.nodeType === 3) {
+					// @ts-ignore
 					if (range.startContainer.length === range.startOffset) { // {text}{keyword}
 						if (range.startContainer.nextSibling) {
 							this.focusNode(range.startContainer.nextSibling);
@@ -642,12 +659,12 @@ export default class SMSEditorCtrl {
 	 * 文本修改后, 重置预览文本和最终结果
 	 * - !!! 输入时, 过滤【 和 】
 	 */
-	onChange($event) {
+	onChange($event: Event) {
 
 		this.clearMozBr();
-
-		if ($event && ($event.target.nodeName === 'INPUT' || $event.target.nodeName === 'IMG')) {
-			this.focusNode($event.target);
+		const target: Node = $event.target as Node;
+		if ($event && (target.nodeName === 'INPUT' || target.nodeName === 'IMG')) {
+			this.focusNode(target);
 		}
 
 		this.rememberFocus();
@@ -705,25 +722,25 @@ export default class SMSEditorCtrl {
 	 * 添加短链提示效果
 	 * @param currentTag 包含当前复制内容的元素
 	 */
-	handleTooltip(currentTag, autoShow = true) {
-		let showTip = null;
+	handleTooltip(currentTag: HTMLElement, autoShow = true) {
+		let showTip: any = null;
 		// 计时
 		if (autoShow) {
 			this.setToolTip(currentTag, true);
-			showTip = this._$timeout(() => {
-				this._$timeout.cancel(showTip);
+			showTip = this.$timeout(() => {
+				this.$timeout.cancel(showTip);
 				this.setToolTip(currentTag, false);
 			}, 10000);
 		}
 
 		// 鼠标划入显示
 		currentTag.onmouseenter = () => {
-			this._$timeout.cancel(showTip);
+			this.$timeout.cancel(showTip);
 			this.setToolTip(currentTag, true);
 		};
 		// 鼠标划出不显示
 		currentTag.onmouseleave = () => {
-			this._$timeout.cancel(showTip);
+			this.$timeout.cancel(showTip);
 			this.setToolTip(currentTag, false);
 		};
 	}
@@ -733,21 +750,25 @@ export default class SMSEditorCtrl {
 	 * @param tag 包含短链内容的元素
 	 * @param showFlag 是否显示
 	 */
-	setToolTip(currentTag, showFlag) {
+	setToolTip(currentTag: HTMLElement, showFlag: boolean) {
 		const UI_SPACE_TOP = 6;
-		const parentEle = document.getElementById('sms-content-holder').querySelector('#sms-content');
+		const parentEle: HTMLElement = document.getElementById('sms-content-holder').querySelector('#sms-content');
 		const tip = document.getElementById('tip');
+		// @ts-ignore
 		const TIP_WIDTH = window.getComputedStyle(tip).getPropertyValue('width').split('px')[0] * 1 + window.getComputedStyle(tip).getPropertyValue('padding-right').split('px')[0] * 1;
+		// @ts-ignore
 		const TIP_HEIGHT = window.getComputedStyle(tip).getPropertyValue('height').split('px')[0] * 1 + window.getComputedStyle(tip).getPropertyValue('padding-top').split('px')[0] * 2 + UI_SPACE_TOP;
-		const showTip = this._$timeout(() => {
-			this._$timeout.cancel(showTip);
+		const showTip = this.$timeout(() => {
+			this.$timeout.cancel(showTip);
 			this.showTips = showFlag;
 			if (showFlag) {
 				const tipPosition = this.positionCompute(currentTag, parentEle, TIP_WIDTH);
+				// @ts-ignore
 				this.tipsPosition = {
 					left: tipPosition.newLeft + 'px',
 					top: parentEle.scrollTop > 0 ? currentTag.offsetTop - parentEle.scrollTop - TIP_HEIGHT + 'px' : currentTag.offsetTop - TIP_HEIGHT + 'px'
 				};
+				// @ts-ignore
 				this.angleStyle = {
 					left: tipPosition.angleLeft + 'px'
 				};
@@ -755,7 +776,7 @@ export default class SMSEditorCtrl {
 		}, 0);
 	}
 
-	positionCompute(currentTag, parentEle, tipWidth) {
+	positionCompute(currentTag: HTMLElement, parentEle: HTMLElement , tipWidth: number) {
 		const currentWidth = Math.ceil(currentTag.offsetWidth / 2);
 		const parentEleWidth = parentEle.offsetWidth;
 		const currentPositionLeft = currentTag.offsetLeft;
@@ -780,8 +801,8 @@ export default class SMSEditorCtrl {
 	 * - 这条代码如果在 firefox 里跑通了, 晚上就去吃大餐 by AshZhang@2016.3.29
 	 * @param e
 	 */
-	onPaste(e) {
-		const event = e.originalEvent || e,
+	onPaste(e: ClipboardEvent) {
+		const event = e,
 			htmlContent = event.clipboardData.getData('text/html');
 		if (htmlContent.indexOf('sms-keyword-inserted') > -1 || htmlContent.indexOf('data-emo-name') > -1) {
 			// TODO: 后期考虑使用 <p> 标签做段落处理, 这样可以使用 br 作为行内换行
@@ -839,10 +860,10 @@ export default class SMSEditorCtrl {
 			window.requestAnimationFrame(() => {
 				if (!this.includedShortLink(this._content.innerHTML)) {
 					this.showTips = false;
-					if (this._$scope.$$phase) {
-						this._$scope.$applyAsync();
+					if (this.$scope.$$phase) {
+						this.$scope.$applyAsync();
 					} else {
-						this._$scope.$apply();
+						this.$scope.$apply();
 					}
 					return;
 				}
@@ -851,13 +872,14 @@ export default class SMSEditorCtrl {
 				const startOffset = selection.focusNode.textContent.indexOf(shortLinkHead);
 				if (startOffset === -1) {
 					this.showTips = false;
-					if (this._$scope.$$phase) {
-						this._$scope.$applyAsync();
+					if (this.$scope.$$phase) {
+						this.$scope.$applyAsync();
 					} else {
-						this._$scope.$apply();
+						this.$scope.$apply();
 					}
 					return;
 				}
+				// @ts-ignore
 				if (selection.focusNode.parentNode.nodeName.toUpperCase() === 'A' || selection.focusNode.className === 'sms-content') {
 					return;
 				}
@@ -866,7 +888,7 @@ export default class SMSEditorCtrl {
 		}
 	}
 
-	transformToATag(selection, startOffset, contentLength) {
+	transformToATag(selection: any, startOffset: number, contentLength: number) {
 		const insertRange = document.createRange();
 		insertRange.setStart(selection.focusNode, startOffset);
 		insertRange.setEnd(selection.focusNode, startOffset + contentLength);
@@ -881,7 +903,7 @@ export default class SMSEditorCtrl {
 			selection.collapse(selection.focusNode, selection.focusOffset);
 		}
 	}
-	includedShortLink(string) {
+	includedShortLink(string: string) {
 		if (string.indexOf('c.tb.cn') > -1) {
 			return 'c.tb.cn';
 		}
@@ -891,7 +913,7 @@ export default class SMSEditorCtrl {
 		if (string.indexOf('t.cn') > -1) {
 			return 't.cn';
 		}
-		return false;
+		return null;
 	}
 }
 
