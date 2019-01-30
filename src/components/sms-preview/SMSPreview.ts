@@ -4,6 +4,7 @@
 
 import './_sms-preview.scss';
 import * as angular from 'angular';
+import { opts } from '../../../typings/sms';
 const template = require('./sms-preview.tpl.html')
 // import template from './sms-preview.tpl.html';
 
@@ -21,10 +22,10 @@ export default ($sce: ng.ISCEDelegateService) => ({
 
 	link(scope: ng.IScope, element: ng.IRootElementService) {
 
-		const opts = scope.opts || (scope.opts = {});
-		const keywordPrefix = scope.opts.keywordPrefix || 'œœ';
-		const keywordSuffix = scope.opts.keywordSuffix || 'œœ';
-		const trimContent = angular.isDefined(opts.trimContent) ? opts.trimContent : true;
+		const opts: opts = scope.opts || (scope.opts = {});
+		const keywordPrefix: string = scope.opts.keywordPrefix || 'œœ';
+		const keywordSuffix: string = scope.opts.keywordSuffix || 'œœ';
+		const trimContent: boolean = angular.isDefined(opts.trimContent) ? opts.trimContent : true;
 		scope.smsPreviewStatText = trimContent ? '不含变量' : '含空格，不含变量';
 		scope.smsPreviewTipsText = trimContent ? '2.上图仅为操作预览，最终字数和计费条数以实际执行时发送为准。' : '2.上图仅为操作预览，变量无固定长度，最终字数和计费条数以实际执行时发送为准，建议先测试执行。';
 
@@ -38,7 +39,7 @@ export default ($sce: ng.ISCEDelegateService) => ({
 			const customSignature = opts.customSignature ? `【${opts.customSignature.replace(/</g, '&lt;')}】` : '';
 			const unsubscribeText = opts.useUnsubscribe ? (opts.unsubscribeText || '') : '';
 
-			// @ts-ignore
+			// @ts-ignore $sce 上没有定义 trustAsHtml 方法
 			scope.smsPreviewTipsInTipsText = $sce.trustAsHtml(opts.smsChargeTips ? `1.${opts.smsChargeTips}` : '1.当前通道单条短信字数限制 <span style="color: red;">70</span> 个字；超出 70 个字，按 <span style="color: red;">67</span> 字一条计费；');
 			// 字数统计
 			scope.totalChars = opts.totalCharts = text
@@ -93,10 +94,10 @@ export default ($sce: ng.ISCEDelegateService) => ({
 	/**
 	 * 将空行标记格式化
 	 * */
-	formatEmpty(data: Array<string>) {
-		const sms = [];
+	formatEmpty(data: string[]) {
+		const sms: string[] = [];
 		for (let item of data) {
-			const content = item.length ? `<div>${item}</div>` : '<div><br/></div>';
+			const content: string = item.length ? `<div>${item}</div>` : '<div><br/></div>';
 			sms.push(content);
 		}
 		return sms.join('');
