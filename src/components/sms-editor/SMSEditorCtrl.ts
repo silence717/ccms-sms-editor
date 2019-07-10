@@ -850,7 +850,8 @@ export default class SMSEditorCtrl {
 			if (isFirefox) {
 				document.execCommand('insertText', false, textContent.replace(BRACKET_REG, '').replace('\n', ''));
 			} else {
-				document.execCommand('insertText', false, textContent.replace(BRACKET_REG, ''));
+				document.execCommand('insertHTML', false, htmlContent);
+				// document.execCommand('insertText', false, textContent.replace(BRACKET_REG, ''));
 			}
 
 		}
