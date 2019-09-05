@@ -40,7 +40,7 @@ export default ($sce: ng.ISCEDelegateService) => ({
 			const unsubscribeText = opts.useUnsubscribe ? (opts.unsubscribeText || '') : '';
 
 			// @ts-ignore $sce 上没有定义 trustAsHtml 方法
-			scope.smsPreviewTipsInTipsText = $sce.trustAsHtml(opts.smsChargeTips ? `1.${opts.smsChargeTips}` : '1.当前通道单条短信字数限制 <span style="color: red;">70</span> 个字；超出 70 个字，按 <span style="color: red;">67</span> 字一条计费；');
+			scope.smsPreviewTipsInTipsText = $sce.trustAsHtml(opts.smsChargeTips ? `1.${opts.smsChargeTips}` : '1.当前通道单条短信字数限制 <span style="color: red;">70</span> 个字；超出 70 个字，均按 <span style="color: red;">67</span> 字一条计费；');
 			// 字数统计
 			scope.totalChars = opts.totalCharts = text
 				.replace(varReg, '')
